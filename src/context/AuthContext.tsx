@@ -114,7 +114,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       
       // Sign up the user
-      const { error, data } = await supabase.auth.signUp({ email, password });
+      const { error, data } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          emailRedirectTo: window.location.origin + '/login'
+        }
+      });
       
       if (error) throw error;
       
@@ -138,8 +144,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       toast({
         title: "Account created!",
-        description: "You have successfully signed up",
+        description: "Please check your email to confirm your account",
       });
+      
+      // Do not automatically navigate to app - user needs to confirm email
+      
     } catch (error: any) {
       toast({
         variant: "destructive",

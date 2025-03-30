@@ -7,6 +7,7 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const LoginPage = () => {
   const { t } = useLanguage();
@@ -16,6 +17,15 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  // Check if redirected from signup with confirmation param
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('confirmEmail') === 'true') {
+      setShowConfirmation(true);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +40,11 @@ const LoginPage = () => {
       await login(email, password);
       // Auth context will handle navigation
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      if (err.message?.includes('Email not confirmed')) {
+        setError("Please confirm your email before logging in");
+      } else {
+        setError(err.message || "Login failed");
+      }
     }
   };
 
@@ -43,6 +57,14 @@ const LoginPage = () => {
         </div>
         
         <div className="cosmic-card p-8">
+          {showConfirmation && (
+            <Alert className="mb-6 bg-cosmic-500/20 border-cosmic-500 text-white">
+              <AlertDescription>
+                Please check your email to confirm your account before logging in.
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-white">

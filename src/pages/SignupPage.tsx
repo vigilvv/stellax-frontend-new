@@ -7,6 +7,8 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle2 } from "lucide-react";
 
 const SignupPage = () => {
   const { t } = useLanguage();
@@ -17,6 +19,7 @@ const SignupPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,11 +42,43 @@ const SignupPage = () => {
     
     try {
       await signUp(email, password);
-      // Auth context will handle navigation
+      setSuccess(true);
+      // Don't navigate, show success message instead
     } catch (err: any) {
       setError(err.message || "Signup failed");
     }
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen stellar-gradient flex flex-col items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <div className="mb-8 text-center">
+            <Logo size="lg" />
+            <h1 className="mt-6 text-3xl font-bold text-white">{t("signUp")}</h1>
+          </div>
+          
+          <div className="cosmic-card p-8">
+            <div className="flex flex-col items-center justify-center text-center space-y-4">
+              <CheckCircle2 className="h-16 w-16 text-cosmic-500 mb-2" />
+              <h2 className="text-2xl font-bold">Account Created!</h2>
+              <Alert className="bg-white/10 border-cosmic-200 text-white">
+                <AlertDescription>
+                  Please check your email ({email}) to confirm your account before logging in.
+                </AlertDescription>
+              </Alert>
+              <Button 
+                className="w-full bg-cosmic-500 hover:bg-cosmic-600 mt-4"
+                onClick={() => navigate('/login')}
+              >
+                Go to Login
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen stellar-gradient flex flex-col items-center justify-center p-4">

@@ -4,13 +4,57 @@ import { Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/context/LanguageContext';
 
+// Define the SpeechRecognition types that TypeScript doesn't know about
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  [index: number]: SpeechRecognitionResult;
+  length: number;
+}
+
+interface SpeechRecognitionResult {
+  [index: number]: SpeechRecognitionAlternative;
+  isFinal: boolean;
+  length: number;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognitionError extends Event {
+  error: string;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionError) => void;
+  onend: () => void;
+  start: () => void;
+  stop: () => void;
+}
+
+// Augment the Window interface
+declare global {
+  interface Window {
+    SpeechRecognition?: new () => SpeechRecognition;
+    webkitSpeechRecognition?: new () => SpeechRecognition;
+  }
+}
+
 interface SpeechToTextProps {
   onTranscript: (text: string) => void;
 }
 
 export function SpeechToText({ onTranscript }: SpeechToTextProps) {
   const [isListening, setIsListening] = useState(false);
-  const [recognition, setRecognition] = useState<any>(null);
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
   const { language, t } = useLanguage();
 
   // Map our app languages to SpeechRecognition languages
@@ -22,20 +66,20 @@ export function SpeechToText({ onTranscript }: SpeechToTextProps) {
 
   useEffect(() => {
     // Initialize speech recognition
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
     
-    if (SpeechRecognition) {
-      const recognitionInstance = new SpeechRecognition();
+    if (SpeechRecognitionAPI) {
+      const recognitionInstance = new SpeechRecognitionAPI();
       recognitionInstance.continuous = false;
       recognitionInstance.interimResults = false;
       
-      recognitionInstance.onresult = (event: any) => {
+      recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript;
         onTranscript(transcript);
         setIsListening(false);
       };
       
-      recognitionInstance.onerror = (event: any) => {
+      recognitionInstance.onerror = (event: SpeechRecognitionError) => {
         console.error('Speech recognition error', event.error);
         setIsListening(false);
       };
@@ -59,7 +103,7 @@ export function SpeechToText({ onTranscript }: SpeechToTextProps) {
     if (recognition) {
       recognition.lang = languageMap[language] || 'en-US';
     }
-  }, [language, recognition]);
+  }, [language, recognition, languageMap]);
 
   const toggleListening = () => {
     if (!recognition) return;

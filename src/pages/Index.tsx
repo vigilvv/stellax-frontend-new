@@ -1,6 +1,5 @@
 
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "@/components/LanguageToggle";

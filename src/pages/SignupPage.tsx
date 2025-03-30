@@ -61,15 +61,19 @@ const SignupPage = () => {
           <div className="cosmic-card p-8">
             <div className="flex flex-col items-center justify-center text-center space-y-4">
               <CheckCircle2 className="h-16 w-16 text-cosmic-500 mb-2" />
-              <h2 className="text-2xl font-bold">Account Created!</h2>
+              <h2 className="text-2xl font-bold text-white">Account Created!</h2>
               <Alert className="bg-white/10 border-cosmic-200 text-white">
                 <AlertDescription>
-                  Please check your email ({email}) to confirm your account before logging in.
+                  We've sent a verification email to <span className="font-bold">{email}</span>. 
+                  Please check your inbox and click the verification link to activate your account.
                 </AlertDescription>
               </Alert>
+              <p className="text-cosmic-300 mt-2">
+                After verifying your email, you'll be able to log in to your account.
+              </p>
               <Button 
                 className="w-full bg-cosmic-500 hover:bg-cosmic-600 mt-4"
-                onClick={() => navigate('/login')}
+                onClick={() => navigate('/login?confirmEmail=true')}
               >
                 Go to Login
               </Button>

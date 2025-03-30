@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
@@ -20,7 +20,7 @@ const LoginPage = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   // Check if redirected from signup with confirmation param
-  React.useEffect(() => {
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('confirmEmail') === 'true') {
       setShowConfirmation(true);

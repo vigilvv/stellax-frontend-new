@@ -1,10 +1,10 @@
-
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 // Initialize Supabase client
 // In a real application, these would be environment variables
-const supabaseUrl = 'https://your-supabase-url.supabase.co';
-const supabaseAnonKey = 'your-supabase-anon-key';
+const supabaseUrl = "https://etpkjcxpqazcvmtrgbgg.supabase.co";
+const supabaseAnonKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0cGtqY3hwcWF6Y3ZtdHJnYmdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMzNTY4NDQsImV4cCI6MjA1ODkzMjg0NH0.ew-FBgHNOni-tUMA7QjilFoIJ17PSTQnRX663UacPrs";
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -15,28 +15,26 @@ export const signUp = async (email: string, password: string) => {
       email,
       password,
     });
-    
+
     if (error) throw error;
 
     // Generate a dummy wallet address
     const walletAddress = generateDummyWalletAddress();
-    
+
     // Store user details in the database
     if (data.user) {
-      await supabase
-        .from('user_profiles')
-        .insert([
-          { 
-            user_id: data.user.id, 
-            email: email, 
-            wallet_address: walletAddress 
-          }
-        ]);
+      await supabase.from("user_profiles").insert([
+        {
+          user_id: data.user.id,
+          email: email,
+          wallet_address: walletAddress,
+        },
+      ]);
     }
-    
+
     return { data, walletAddress };
   } catch (error) {
-    console.error('Error signing up:', error);
+    console.error("Error signing up:", error);
     throw error;
   }
 };
@@ -47,22 +45,23 @@ export const login = async (email: string, password: string) => {
       email,
       password,
     });
-    
+
     if (error) throw error;
-    
+
     // Get the user's wallet address
     const { data: profileData } = await supabase
-      .from('user_profiles')
-      .select('wallet_address')
-      .eq('user_id', data.user.id)
+      .from("user_profiles")
+      .select("wallet_address")
+      .eq("user_id", data.user.id)
       .single();
-      
-    return { 
-      user: data.user, 
-      walletAddress: profileData?.wallet_address || generateDummyWalletAddress() 
+
+    return {
+      user: data.user,
+      walletAddress:
+        profileData?.wallet_address || generateDummyWalletAddress(),
     };
   } catch (error) {
-    console.error('Error logging in:', error);
+    console.error("Error logging in:", error);
     throw error;
   }
 };
@@ -72,7 +71,7 @@ export const logout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   } catch (error) {
-    console.error('Error logging out:', error);
+    console.error("Error logging out:", error);
     throw error;
   }
 };
@@ -82,15 +81,15 @@ export const getCurrentUser = async () => {
     const { data } = await supabase.auth.getUser();
     return data.user;
   } catch (error) {
-    console.error('Error getting current user:', error);
+    console.error("Error getting current user:", error);
     return null;
   }
 };
 
 // Helper function to generate a dummy Stellar wallet address
 export const generateDummyWalletAddress = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-  let result = 'G';
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  let result = "G";
   for (let i = 0; i < 55; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }

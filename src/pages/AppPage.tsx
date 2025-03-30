@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
@@ -7,13 +6,39 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { SpeechToText } from "@/components/SpeechToText";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Copy, 
-  Send, 
-  LogOut, 
-  CheckCircle2,
-} from "lucide-react";
+import { Copy, Send, LogOut, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { createOpenAI } from "@ai-sdk/openai";
+import { z } from "zod";
+import { tool } from "ai";
+// import { useChat } from "@ai-sdk/react";
+
+import { generateText } from "ai";
+// import { openai } from "@ai-sdk/openai";
+
+const openai = createOpenAI({
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY!,
+});
+
+const messageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string(),
+});
+
+//====== Tool calling
+async function getBalance(): Promise<number> {
+  // Replace this with actual logic to retrieve the user's balance
+  return 10009.0; // Example balance
+}
+
+const balanceTool = tool({
+  description: "Retrieve the user's current account balance.",
+  parameters: z.object({}), // No parameters required
+  execute: async () => {
+    const balance = await getBalance();
+    return { balance };
+  },
+});
 
 // Dummy data for wallet assets
 const DUMMY_ASSETS = [
@@ -25,21 +50,30 @@ const DUMMY_ASSETS = [
 // Dummy responses for the AI assistant
 const AI_RESPONSES: Record<string, Record<string, string>> = {
   en: {
-    default: "I'm your StellaX AI assistant. How can I help you with your Stellar wallet today?",
-    greeting: "Hello! I'm here to help with your Stellar wallet. You can ask about your balance, send assets, or learn about Stellar.",
-    balance: "Your current wallet balance is 1,250 XLM, 350 USDC, and 0.005 BTC.",
+    default:
+      "I'm your StellaX AI assistant. How can I help you with your Stellar wallet today?",
+    greeting:
+      "Hello! I'm here to help with your Stellar wallet. You can ask about your balance, send assets, or learn about Stellar.",
+    balance:
+      "Your current wallet balance is 1,250 XLM, 350 USDC, and 0.005 BTC.",
     help: "I can help you manage your Stellar wallet. Try asking about your balance, sending assets, or learning about Stellar.",
   },
   es: {
-    default: "Soy tu asistente de IA StellaX. ¿Cómo puedo ayudarte con tu billetera Stellar hoy?",
-    greeting: "¡Hola! Estoy aquí para ayudarte con tu billetera Stellar. Puedes preguntar sobre tu saldo, enviar activos o aprender sobre Stellar.",
-    balance: "El saldo actual de tu billetera es 1,250 XLM, 350 USDC y 0.005 BTC.",
+    default:
+      "Soy tu asistente de IA StellaX. ¿Cómo puedo ayudarte con tu billetera Stellar hoy?",
+    greeting:
+      "¡Hola! Estoy aquí para ayudarte con tu billetera Stellar. Puedes preguntar sobre tu saldo, enviar activos o aprender sobre Stellar.",
+    balance:
+      "El saldo actual de tu billetera es 1,250 XLM, 350 USDC y 0.005 BTC.",
     help: "Puedo ayudarte a administrar tu billetera Stellar. Intenta preguntar sobre tu saldo, enviar activos o aprender sobre Stellar.",
   },
   hi: {
-    default: "मैं आपका StellaX AI असिस्टेंट हूं। आज मैं आपकी स्टेलर वॉलेट के साथ कैसे मदद कर सकता हूं?",
-    greeting: "नमस्ते! मैं आपकी स्टेलर वॉलेट के साथ मदद करने के लिए यहां हूं। आप अपने बैलेंस के बारे में पूछ सकते हैं, एसेट्स भेज सकते हैं, या स्टेलर के बारे में जान सकते हैं।",
-    balance: "आपके वॉलेट का वर्तमान बैलेंस 1,250 XLM, 350 USDC, और 0.005 BTC है।",
+    default:
+      "मैं आपका StellaX AI असिस्टेंट हूं। आज मैं आपकी स्टेलर वॉलेट के साथ कैसे मदद कर सकता हूं?",
+    greeting:
+      "नमस्ते! मैं आपकी स्टेलर वॉलेट के साथ मदद करने के लिए यहां हूं। आप अपने बैलेंस के बारे में पूछ सकते हैं, एसेट्स भेज सकते हैं, या स्टेलर के बारे में जान सकते हैं।",
+    balance:
+      "आपके वॉलेट का वर्तमान बैलेंस 1,250 XLM, 350 USDC, और 0.005 BTC है।",
     help: "मैं आपकी स्टेलर वॉलेट प्रबंधित करने में मदद कर सकता हूं। अपने बैलेंस के बारे में पूछने, एसेट्स भेजने, या स्टेलर के बारे में जानने का प्रयास करें।",
   },
 };
@@ -53,17 +87,30 @@ const AppPage = () => {
   const { t, language } = useLanguage();
   const { user, logout, walletAddress, userEmail } = useAuth();
   const { toast } = useToast();
-  
+
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+
+  // AI chat
+  // const {
+  //   messages: aiMessages,
+  //   input: aiInput,
+  //   handleInputChange,
+  //   handleSubmit,
+  // } = useChat({
+  //   model: openai("gpt-4-turbo"),
+  //   schema: messageSchema,
+  // });
+
   // Initialize with welcome message
   useEffect(() => {
-    setMessages([{ 
-      type: "assistant", 
-      text: AI_RESPONSES[language]?.greeting || AI_RESPONSES.en.greeting 
-    }]);
+    setMessages([
+      {
+        type: "assistant",
+        text: AI_RESPONSES[language]?.greeting || AI_RESPONSES.en.greeting,
+      },
+    ]);
   }, [language]);
 
   // Scroll to bottom when messages change
@@ -71,27 +118,24 @@ const AppPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!input.trim()) return;
-    
+
     // Add user message
-    setMessages(prev => [...prev, { type: "user", text: input }]);
-    
-    // Generate AI response
-    setTimeout(() => {
-      let response = AI_RESPONSES[language]?.default || AI_RESPONSES.en.default;
-      
-      // Simple keyword matching for demo purposes
-      const lowerInput = input.toLowerCase();
-      if (lowerInput.includes("balance") || lowerInput.includes("saldo") || lowerInput.includes("बैलेंस")) {
-        response = AI_RESPONSES[language]?.balance || AI_RESPONSES.en.balance;
-      } else if (lowerInput.includes("help") || lowerInput.includes("ayuda") || lowerInput.includes("मदद")) {
-        response = AI_RESPONSES[language]?.help || AI_RESPONSES.en.help;
-      }
-      
-      setMessages(prev => [...prev, { type: "assistant", text: response }]);
-    }, 1000);
-    
+    setMessages((prev) => [...prev, { type: "user", text: input }]);
+
+    const { text } = await generateText({
+      // apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+      model: openai("o3-mini"),
+      prompt: input,
+      tools: {
+        balance: balanceTool,
+      },
+      maxSteps: 2, // Allows the model to call the tool and respond
+    });
+
+    setMessages((prev) => [...prev, { type: "assistant", text: text }]);
+
     setInput("");
   };
 
@@ -142,23 +186,21 @@ const AppPage = () => {
           <div className="cosmic-card p-6 mb-6">
             <h2 className="font-bold text-lg mb-4">{t("walletAddress")}</h2>
             <div className="flex items-center space-x-2 font-mono text-sm mb-4">
-              <div className="truncate flex-1">
-                {walletAddress}
-              </div>
-              <Button 
-                size="icon" 
-                variant="ghost" 
+              <div className="truncate flex-1">{walletAddress}</div>
+              <Button
+                size="icon"
+                variant="ghost"
                 onClick={copyWalletAddress}
                 className="h-8 w-8"
               >
                 <Copy className="h-4 w-4" />
               </Button>
             </div>
-            
+
             <h2 className="font-bold text-lg mb-2">{t("email")}</h2>
             <p className="text-sm truncate">{userEmail}</p>
           </div>
-          
+
           <div className="cosmic-card p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="font-bold text-lg">{t("assets")}</h2>
@@ -167,17 +209,24 @@ const AppPage = () => {
                 <p className="font-bold">1,250 XLM</p>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               {DUMMY_ASSETS.map((asset) => (
-                <div key={asset.symbol} className="flex justify-between items-center">
+                <div
+                  key={asset.symbol}
+                  className="flex justify-between items-center"
+                >
                   <div className="flex items-center">
-                    <div className={`w-8 h-8 rounded-full ${asset.color} flex items-center justify-center mr-2`}>
+                    <div
+                      className={`w-8 h-8 rounded-full ${asset.color} flex items-center justify-center mr-2`}
+                    >
                       <span className="text-xs">{asset.symbol}</span>
                     </div>
                     <span>{asset.name}</span>
                   </div>
-                  <span>{asset.balance} {asset.symbol}</span>
+                  <span>
+                    {asset.balance} {asset.symbol}
+                  </span>
                 </div>
               ))}
             </div>
@@ -224,7 +273,10 @@ const AppPage = () => {
                 />
               </div>
               <SpeechToText onTranscript={handleSpeechInput} />
-              <Button onClick={handleSendMessage} className="bg-cosmic-500 hover:bg-cosmic-600">
+              <Button
+                onClick={handleSendMessage}
+                className="bg-cosmic-500 hover:bg-cosmic-600"
+              >
                 <Send className="h-4 w-4" />
               </Button>
             </div>

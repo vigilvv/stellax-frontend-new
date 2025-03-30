@@ -104,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: error.message || "An error occurred during login",
       });
       console.error("Login error:", error);
+      throw error; // Re-throw to allow caller to catch
     } finally {
       setIsLoading(false);
     }
@@ -147,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: "Please check your email to confirm your account",
       });
       
-      // Do not automatically navigate to app - user needs to confirm email
+      // Do not automatically navigate or set user - they need to confirm email first
       
     } catch (error: any) {
       toast({
@@ -156,6 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: error.message || "An error occurred during sign up",
       });
       console.error("Sign up error:", error);
+      throw error; // Re-throw the error so SignupPage can catch it
     } finally {
       setIsLoading(false);
     }

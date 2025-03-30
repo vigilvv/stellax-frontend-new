@@ -42,13 +42,13 @@ const SignupPage = () => {
     
     try {
       await signUp(email, password);
-      setSuccess(true);
-      // Don't navigate, show success message instead
+      setSuccess(true); // Set success to true after successful signup
     } catch (err: any) {
       setError(err.message || "Signup failed");
     }
   };
 
+  // Render success view if signup was successful
   if (success) {
     return (
       <div className="min-h-screen stellar-gradient flex flex-col items-center justify-center p-4">
@@ -84,6 +84,7 @@ const SignupPage = () => {
     );
   }
 
+  // Render sign up form if not successful yet
   return (
     <div className="min-h-screen stellar-gradient flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full">

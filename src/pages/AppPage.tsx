@@ -18,6 +18,7 @@ import SpeechToTextNew from "@/components/SpeechToTextNew";
 import { getBalances } from "@/stellar-functions/get-balances";
 import { balanceTool } from "@/agent-tools/balance-tool";
 import { paymentTool } from "@/agent-tools/payment-tool";
+import { pathPaymentTool } from "@/agent-tools/path-payment";
 // import { openai } from "@ai-sdk/openai";
 
 const openai = createOpenAI({
@@ -130,6 +131,7 @@ const AppPage = () => {
       tools: {
         balance: balanceTool,
         payment: paymentTool,
+        pathPayment: pathPaymentTool,
       },
       maxSteps: 2, // Allows the model to call the tool and respond
     });

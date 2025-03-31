@@ -21,7 +21,7 @@ import { z } from "zod";
 
 export const paymentTool = tool({
   description:
-    "Send payment to another user from the current user's wallet. The payment can be in XLM (native asset) or XRP (another asset). If the user does not provide another user's wallet address starting with G... or a proper email address, inform the user politely. If the user does not provide the amount or the asset type (XLM or XRP), ask them to specify that too. After sucess give the user the trasaction id that was returned.",
+    "Send payment to another user from the current user's wallet. The payment can be in XLM (native asset) or XRP (another asset). If the user does not provide another user's wallet address starting with G..., inform the user politely. If the user does not provide the amount or the asset type (XLM or XRP), ask them to specify that too. After sucess give the user the trasaction id that was returned.",
   //   parameters: z.object({
   //     destination: z.string().min(1, "Destination address is required"),
   //     amount: z.string().regex(/^\d+(\.\d+)?$/, "Amount must be a valid number"),
@@ -64,8 +64,8 @@ export const paymentTool = tool({
       throw new Error("Invalid asset type. Please specify 'XLM' or 'XRP'.");
     }
 
-    if (!destination.startsWith("G") && !destination.includes("@")) {
-      throw new Error("Please provide a valid wallet address or email.");
+    if (!destination.startsWith("G")) {
+      throw new Error("Please provide a valid wallet address.");
     }
 
     // Convert amount to string (if it's mistakenly a number)

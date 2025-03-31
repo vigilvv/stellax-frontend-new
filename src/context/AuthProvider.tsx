@@ -128,7 +128,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin + "/login",
+          //   emailRedirectTo: window.location.origin + "/login",
+          emailRedirectTo: "https://stellax-ai.netlify.app" + "/login",
         },
       });
 

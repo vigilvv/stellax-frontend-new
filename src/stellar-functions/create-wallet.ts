@@ -15,6 +15,7 @@ export async function createWallet() {
   if (response.data.successful) {
     console.log("Account created and funded with 10,000 test XLM successfully");
     localStorage.setItem("privateKey", pair.secret());
+    localStorage.setItem("publicKey", pair.publicKey());
     return pair.publicKey();
   } else {
     console.log("Something went wrong. Please try again later.");

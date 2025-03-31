@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { createWallet } from "@/stellar-functions/create-wallet";
 import { setXrpTrustline } from "@/stellar-functions/set-xpr-trustline";
+import { setXlmXrpTrustline } from "@/stellar-functions/set-xlm-xrp-trustline";
 
 interface AuthContextType {
   user: any | null;
@@ -184,6 +185,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Setup XRPTEST-XLM trustline
+      const xlmXrpTrustlineSuccess = await setXlmXrpTrustline(
+        walletSecret,
+        "XRPTEST",
+        import.meta.env.VITE_STELLAX_ISSUER_WALLET
+      );
+
+      if (!xlmXrpTrustlineSuccess) {
+        toast({
+          title: "Failed to create xlm-xrp trustline",
+          description: "Please try again later",
+        });
+        throw new Error("Failed to create xlm-xrp trustline");
+      }
 
       // Store user details
       if (data.user) {

@@ -129,7 +129,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password,
         options: {
           //   emailRedirectTo: window.location.origin + "/login",
-          emailRedirectTo: "https://stellax-ai.netlify.app" + "/login",
+          //   emailRedirectTo: "https://stellax-ai.netlify.app" + "/login",
+          emailRedirectTo: `${import.meta.env.VITE_BASE_URL}/login`,
         },
       });
 

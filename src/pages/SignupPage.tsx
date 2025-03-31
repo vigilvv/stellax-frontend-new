@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
@@ -14,35 +13,40 @@ const SignupPage = () => {
   const { t } = useLanguage();
   const { signUp, isLoading } = useAuth();
   const navigate = useNavigate();
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
+  const [_, setReloadPage] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    
+
     if (!email || !password || !confirmPassword) {
       setError("Please fill in all fields");
       return;
     }
-    
+
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-    
+
     if (password.length < 6) {
       setError("Password must be at least 6 characters");
       return;
     }
-    
+
     try {
       await signUp(email, password);
       setSuccess(true); // Set success to true after successful signup
+      setReloadPage(true);
+      console.log("Reload page");
+      localStorage.removeItem("sb-etpkjcxpqazcvmtrgbgg-auth-token");
     } catch (err: any) {
       setError(err.message || "Signup failed");
     }
@@ -55,25 +59,32 @@ const SignupPage = () => {
         <div className="max-w-md w-full">
           <div className="mb-8 text-center">
             <Logo size="lg" />
-            <h1 className="mt-6 text-3xl font-bold text-white">{t("signUp")}</h1>
+            <h1 className="mt-6 text-3xl font-bold text-white">
+              {t("signUp")}
+            </h1>
           </div>
-          
+
           <div className="cosmic-card p-8">
             <div className="flex flex-col items-center justify-center text-center space-y-4">
               <CheckCircle2 className="h-16 w-16 text-cosmic-500 mb-2" />
-              <h2 className="text-2xl font-bold text-white">Account Created!</h2>
+              <h2 className="text-2xl font-bold text-white">
+                Account Created!
+              </h2>
               <Alert className="bg-white/10 border-cosmic-200 text-white">
                 <AlertDescription>
-                  We've sent a verification email to <span className="font-bold">{email}</span>. 
-                  Please check your inbox and click the verification link to activate your account.
+                  We've sent a verification email to{" "}
+                  <span className="font-bold">{email}</span>. Please check your
+                  inbox and click the verification link to activate your
+                  account.
                 </AlertDescription>
               </Alert>
               <p className="text-cosmic-300 mt-2">
-                After verifying your email, you'll be able to log in to your account.
+                After verifying your email, you'll be able to log in to your
+                account.
               </p>
-              <Button 
+              <Button
                 className="w-full bg-cosmic-500 hover:bg-cosmic-600 mt-4"
-                onClick={() => navigate('/login?confirmEmail=true')}
+                onClick={() => navigate("/login?confirmEmail=true")}
               >
                 Go to Login
               </Button>
@@ -92,7 +103,7 @@ const SignupPage = () => {
           <Logo size="lg" />
           <h1 className="mt-6 text-3xl font-bold text-white">{t("signUp")}</h1>
         </div>
-        
+
         <div className="cosmic-card p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
@@ -109,7 +120,7 @@ const SignupPage = () => {
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password" className="text-white">
                 Password
@@ -124,7 +135,7 @@ const SignupPage = () => {
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-white">
                 Confirm Password
@@ -139,11 +150,9 @@ const SignupPage = () => {
                 required
               />
             </div>
-            
-            {error && (
-              <div className="text-red-400 text-sm">{error}</div>
-            )}
-            
+
+            {error && <div className="text-red-400 text-sm">{error}</div>}
+
             <Button
               type="submit"
               className="w-full bg-cosmic-500 hover:bg-cosmic-600"
@@ -151,7 +160,7 @@ const SignupPage = () => {
             >
               {isLoading ? "Loading..." : t("signUp")}
             </Button>
-            
+
             <div className="text-center text-sm text-cosmic-300">
               Already have an account?{" "}
               <Link to="/login" className="text-cosmic-400 hover:underline">

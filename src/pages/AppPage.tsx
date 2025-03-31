@@ -14,6 +14,7 @@ import { tool } from "ai";
 // import { useChat } from "@ai-sdk/react";
 
 import { generateText } from "ai";
+import SpeechToTextNew from "@/components/SpeechToTextNew";
 // import { openai } from "@ai-sdk/openai";
 
 const openai = createOpenAI({
@@ -272,7 +273,8 @@ const AppPage = () => {
                   className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 pr-10"
                 />
               </div>
-              <SpeechToText onTranscript={handleSpeechInput} />
+              {/* <SpeechToText onTranscript={handleSpeechInput} /> */}
+              {/* <SpeechToTextNew /> */}
               <Button
                 onClick={handleSendMessage}
                 className="bg-cosmic-500 hover:bg-cosmic-600"

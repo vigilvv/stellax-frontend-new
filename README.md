@@ -1,69 +1,59 @@
-# Welcome to your Lovable project
 
-## Project info
+### Installation
 
-**URL**: https://lovable.dev/projects/7eb20f7d-2def-40b8-a40f-7a52442c1f92
+- `pnpm i`
+- `pnpm run dev`
 
-## How can I edit this code?
+### Main pages
 
-There are several ways of editing your application.
+- `src/pages/LandingPage` - landing page
+- `src/pages/AppPage` - chat app page
 
-**Use Lovable**
+### Main Dirctories
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7eb20f7d-2def-40b8-a40f-7a52442c1f92) and start prompting.
+- `src/stellar-functions` - Stellar related functions
+- `src/agent-tools` - Tools for the LLM
 
-Changes made via Lovable will be committed automatically to this repo.
+### Description
 
-**Use your preferred IDE**
+StellaX AI Wallet is a native Stellar network wallet developed using the Stellar SDK.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+**Vision:** Onboard the next Billion users onto the Stellar network with ease.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+**Why now?**
 
-Follow these steps:
+With AI capabilities advancing rapidly there will be a huge push by major blockchain networks to enhance the usability and reach of their networks with the use of AI. Now, with the StellaX AI wallet, Stellar is a step ahead of the rest. As of 2025 it is well established that the capabilities of LLMs (Large Language Models) are improving exponentially, while the cost is decreasing exponentially. This creates a perfect storm for the pioneers to lead the field and create path breaking solutions that help the general public to use the network seamlessly. In this case, pioneers win by capturing the market fast. The next Billion users are the native language speakers who might not appreciate the underlying complexity or utility of blockchains, but want their day-to-day activities like sending and receiving payments to happen seamlessly. This is were StellaX AI is perfectly poised to help the Stellar network to be a pioneer in this new era.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+**What?**
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+* Allows users to send payments without any knowledge of blockchains or the complexities of a payment app
+* Supports multiple payment options like sending the native currency, and also other assets throughs path payments (complexity is completely hidden from the end user)
+* Supports multiple languages (about 168 in the chat interface and 3 natively throughout the app - as of now)
 
-# Step 3: Install the necessary dependencies.
-npm i
+**How?**
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+* Uses OpenAI Gpt-4o LLM model for the chat interface.
+* It has agentic capabilities with "check-balances", "send-payment", and "send-path-payment" tools.
 
-**Edit a file directly in GitHub**
+**Currently supported functions:**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+* Checking account balance (self)
+* Sending payment to a wallet in xlm - returns transaction id
+* Sending path payment from xlm to xrp (testnet sample asset) to a wallet
 
-**Use GitHub Codespaces**
+**Tech Stack:** React, Vite, TypeScript, Supabase Auth, Supabase Postgres, OpenAI, AI SDK (from Vercel)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+I used stellar lab ([https://lab.stellar.org](https://lab.stellar.org/)) to test functionalities before coding them.
 
-## What technologies are used for this project?
+I created a liquidity pool for the Stellar AMM with XLM and XRPTEST. Pool Id: ff73bfc5d459b609dc76ecf52589d8895700c0b9f355daf422909764540f91f9
 
-This project is built with .
+Distributor wallet for XRPTEST: GCGPIBEHXSWBVKQIOJF6F3JLM5FIFD6A7GO52UBNCU6T2GJIAN236Q3W
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+ **Improvements & Future Ideas** :
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/7eb20f7d-2def-40b8-a40f-7a52442c1f92) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+* Create Muxed accounts (CAP-0027) to allow for a hybrid wallet approach
+* Allow users adding trustlines
+* Allow users creating liqudity pools on the native AMM
+* Voice mode interaction
+* Allow swaps between various assets
+* Smart contract integration

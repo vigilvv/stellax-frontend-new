@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { useLanguage } from "@/context/LanguageContext";
-import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/useLanguage";
+import { useAuth } from "@/context/useAuth";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +13,7 @@ const LoginPage = () => {
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,7 +22,7 @@ const LoginPage = () => {
   // Check if redirected from signup with confirmation param
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get('confirmEmail') === 'true') {
+    if (params.get("confirmEmail") === "true") {
       setShowConfirmation(true);
     }
   }, [location]);
@@ -31,17 +30,17 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    
+
     if (!email || !password) {
       setError("Please fill in all fields");
       return;
     }
-    
+
     try {
       await login(email, password);
       // Auth context will handle navigation
-    } catch (err: any) {
-      if (err.message?.includes('Email not confirmed')) {
+    } catch (err) {
+      if (err.message?.includes("Email not confirmed")) {
         setError("Please confirm your email before logging in");
       } else {
         setError(err.message || "Login failed");
@@ -56,16 +55,17 @@ const LoginPage = () => {
           <Logo size="lg" />
           <h1 className="mt-6 text-3xl font-bold text-white">{t("login")}</h1>
         </div>
-        
+
         <div className="cosmic-card p-8">
           {showConfirmation && (
             <Alert className="mb-6 bg-cosmic-500/20 border-cosmic-500 text-white">
               <AlertDescription>
-                Please check your email to confirm your account before logging in.
+                Please check your email to confirm your account before logging
+                in.
               </AlertDescription>
             </Alert>
           )}
-          
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-white">
@@ -81,7 +81,7 @@ const LoginPage = () => {
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <div className="flex justify-between">
                 <Label htmlFor="password" className="text-white">
@@ -98,11 +98,9 @@ const LoginPage = () => {
                 required
               />
             </div>
-            
-            {error && (
-              <div className="text-red-400 text-sm">{error}</div>
-            )}
-            
+
+            {error && <div className="text-red-400 text-sm">{error}</div>}
+
             <Button
               type="submit"
               className="w-full bg-cosmic-500 hover:bg-cosmic-600"
@@ -110,7 +108,7 @@ const LoginPage = () => {
             >
               {isLoading ? "Loading..." : t("login")}
             </Button>
-            
+
             <div className="text-center text-sm text-cosmic-300">
               Don't have an account?{" "}
               <Link to="/signup" className="text-cosmic-400 hover:underline">

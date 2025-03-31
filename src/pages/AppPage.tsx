@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLanguage } from "@/context/LanguageContext";
-import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/useLanguage";
+import { useAuth } from "@/context/useAuth";
 import { Logo } from "@/components/Logo";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { SpeechToText } from "@/components/SpeechToText";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Copy, Send, LogOut, CheckCircle2 } from "lucide-react";
+import { Copy, Send, LogOut, CheckCircle2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { createOpenAI } from "@ai-sdk/openai";
 import { z } from "zod";
@@ -15,6 +15,9 @@ import { tool } from "ai";
 
 import { generateText } from "ai";
 import SpeechToTextNew from "@/components/SpeechToTextNew";
+import { getBalances } from "@/stellar-functions/get-balances";
+import { balanceTool } from "@/agent-tools/balance-tool";
+import { paymentTool } from "@/agent-tools/payment-tool";
 // import { openai } from "@ai-sdk/openai";
 
 const openai = createOpenAI({
@@ -27,26 +30,17 @@ const messageSchema = z.object({
 });
 
 //====== Tool calling
-async function getBalance(): Promise<number> {
-  // Replace this with actual logic to retrieve the user's balance
-  return 10009.0; // Example balance
-}
-
-const balanceTool = tool({
-  description: "Retrieve the user's current account balance.",
-  parameters: z.object({}), // No parameters required
-  execute: async () => {
-    const balance = await getBalance();
-    return { balance };
-  },
-});
+// async function getBalance(): Promise<number> {
+//   // Replace this with actual logic to retrieve the user's balance
+//   return 10009.0; // Example balance
+// }
 
 // Dummy data for wallet assets
-const DUMMY_ASSETS = [
-  { symbol: "XLM", name: "Stellar", balance: 1250, color: "bg-stellar-700" },
-  { symbol: "USDC", name: "USD Coin", balance: 350, color: "bg-blue-700" },
-  { symbol: "BTC", name: "Bitcoin", balance: 0.005, color: "bg-orange-600" },
-];
+// const DUMMY_ASSETS = [
+//   { symbol: "XLM", name: "Stellar", balance: 1250, color: "bg-stellar-700" },
+//   { symbol: "USDC", name: "USD Coin", balance: 350, color: "bg-blue-700" },
+//   { symbol: "BTC", name: "Bitcoin", balance: 0.005, color: "bg-orange-600" },
+// ];
 
 // Dummy responses for the AI assistant
 const AI_RESPONSES: Record<string, Record<string, string>> = {
@@ -93,6 +87,8 @@ const AppPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const [generatingResponse, setGeneratingResponse] = useState(false);
+
   // AI chat
   // const {
   //   messages: aiMessages,
@@ -125,15 +121,20 @@ const AppPage = () => {
     // Add user message
     setMessages((prev) => [...prev, { type: "user", text: input }]);
 
+    setGeneratingResponse(true);
+
     const { text } = await generateText({
       // apiKey: import.meta.env.VITE_OPENAI_API_KEY,
       model: openai("o3-mini"),
       prompt: input,
       tools: {
         balance: balanceTool,
+        payment: paymentTool,
       },
       maxSteps: 2, // Allows the model to call the tool and respond
     });
+
+    setGeneratingResponse(false);
 
     setMessages((prev) => [...prev, { type: "assistant", text: text }]);
 
@@ -147,9 +148,9 @@ const AppPage = () => {
     }
   };
 
-  const handleSpeechInput = (transcript: string) => {
-    setInput(transcript);
-  };
+  // const handleSpeechInput = (transcript: string) => {
+  //   setInput(transcript);
+  // };
 
   const copyWalletAddress = () => {
     if (walletAddress) {
@@ -202,7 +203,7 @@ const AppPage = () => {
             <p className="text-sm truncate">{userEmail}</p>
           </div>
 
-          <div className="cosmic-card p-6">
+          {/* <div className="cosmic-card p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="font-bold text-lg">{t("assets")}</h2>
               <div className="text-right">
@@ -231,7 +232,7 @@ const AppPage = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </aside>
 
         {/* Main chat area */}
@@ -257,6 +258,12 @@ const AppPage = () => {
                   </div>
                 </div>
               ))}
+              {generatingResponse ? (
+                <div className="flex gap-2 text-white align-middle items-center text-center">
+                  <Loader2 className="h-4 w-4  animate-spin" />
+                  Thinking
+                </div>
+              ) : null}
               <div ref={messagesEndRef} />
             </div>
           </div>

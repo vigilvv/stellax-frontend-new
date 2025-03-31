@@ -1,10 +1,8 @@
-
-import React from "react";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/context/useLanguage";
 import { Logo } from "@/components/Logo";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MessageSquare, Mic, Globe, Shield } from "lucide-react";
 
 const LandingPage = () => {
@@ -37,15 +35,13 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 md:py-24 flex flex-col md:flex-row items-center">
         <div className="md:w-1/2 mb-10 md:mb-0">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            StellaX
-          </h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">StellaX</h1>
           <p className="text-xl md:text-2xl mb-8 text-cosmic-100">
             {t("tagline")}
           </p>
           <div className="flex flex-wrap gap-4">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-cosmic-500 hover:bg-cosmic-600 text-lg"
               onClick={() => navigate("/signup")}
             >
@@ -60,14 +56,16 @@ const LandingPage = () => {
               <div className="flex justify-between">
                 <div>
                   <p className="text-sm text-gray-400">{t("walletAddress")}</p>
-                  <p className="font-mono text-sm truncate w-48 md:w-auto">GCKB32...XW47P</p>
+                  <p className="font-mono text-sm truncate w-48 md:w-auto">
+                    GCKB32...XW47P
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-gray-400">{t("balance")}</p>
                   <p className="text-xl font-bold">1,250 XLM</p>
                 </div>
               </div>
-              
+
               <div className="border-t border-white/10 pt-4">
                 <p className="text-sm text-gray-400 mb-2">{t("assets")}</p>
                 <div className="space-y-2">
@@ -91,12 +89,12 @@ const LandingPage = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="relative">
                 <div className="border-t border-white/10 pt-4 pb-2">
                   <div className="bg-stellar-800/50 rounded-lg p-3 flex items-center">
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       placeholder={t("enterCommand")}
                       className="bg-transparent border-none focus:outline-none text-white placeholder:text-gray-400 flex-1"
                       readOnly
@@ -117,7 +115,9 @@ const LandingPage = () => {
 
       {/* Features Section */}
       <section className="container mx-auto px-4 py-24 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-16">{t("features")}</h2>
+        <h2 className="text-3xl md:text-4xl font-bold mb-16">
+          {t("features")}
+        </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="cosmic-card p-6 text-center">
             <div className="w-16 h-16 mx-auto bg-cosmic-600/50 rounded-full flex items-center justify-center mb-4">
@@ -126,7 +126,7 @@ const LandingPage = () => {
             <h3 className="text-xl font-bold mb-3">{t("aiPowered")}</h3>
             <p className="text-cosmic-200">{t("aiDesc")}</p>
           </div>
-          
+
           <div className="cosmic-card p-6 text-center">
             <div className="w-16 h-16 mx-auto bg-cosmic-600/50 rounded-full flex items-center justify-center mb-4">
               <Mic className="h-8 w-8 text-cosmic-200" />
@@ -134,7 +134,7 @@ const LandingPage = () => {
             <h3 className="text-xl font-bold mb-3">{t("voiceEnabled")}</h3>
             <p className="text-cosmic-200">{t("voiceDesc")}</p>
           </div>
-          
+
           <div className="cosmic-card p-6 text-center">
             <div className="w-16 h-16 mx-auto bg-cosmic-600/50 rounded-full flex items-center justify-center mb-4">
               <Globe className="h-8 w-8 text-cosmic-200" />
@@ -142,7 +142,7 @@ const LandingPage = () => {
             <h3 className="text-xl font-bold mb-3">{t("multiLang")}</h3>
             <p className="text-cosmic-200">{t("multiLangDesc")}</p>
           </div>
-          
+
           <div className="cosmic-card p-6 text-center">
             <div className="w-16 h-16 mx-auto bg-cosmic-600/50 rounded-full flex items-center justify-center mb-4">
               <Shield className="h-8 w-8 text-cosmic-200" />

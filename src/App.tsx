@@ -1,17 +1,16 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { LanguageProvider } from "@/context/LanguageContext";
-import { AuthProvider } from "@/context/AuthContext";
+import { LanguageProvider } from "@/context/LanguageProvider";
+import { AuthProvider } from "@/context/AuthProvider";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import AppPage from "./pages/AppPage";
 import NotFound from "./pages/NotFound";
-import { useAuth } from "./context/AuthContext";
+import { useAuth } from "./context/useAuth";
 
 const queryClient = new QueryClient();
 
@@ -63,29 +62,29 @@ const AppWithProviders = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route 
-              path="/login" 
+            <Route
+              path="/login"
               element={
                 <PublicRoute>
                   <LoginPage />
                 </PublicRoute>
-              } 
+              }
             />
-            <Route 
-              path="/signup" 
+            <Route
+              path="/signup"
               element={
                 <PublicRoute>
                   <SignupPage />
                 </PublicRoute>
-              } 
+              }
             />
-            <Route 
-              path="/app" 
+            <Route
+              path="/app"
               element={
                 <ProtectedRoute>
                   <AppPage />
                 </ProtectedRoute>
-              } 
+              }
             />
             <Route path="*" element={<NotFound />} />
           </Routes>

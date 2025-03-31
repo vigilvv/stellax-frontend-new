@@ -1,8 +1,7 @@
-
-import React, { useState, useEffect } from 'react';
-import { Mic, MicOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useLanguage } from '@/context/LanguageContext';
+import React, { useState, useEffect } from "react";
+import { Mic, MicOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/useLanguage";
 
 // Define the SpeechRecognition types that TypeScript doesn't know about
 interface SpeechRecognitionEvent extends Event {
@@ -54,60 +53,64 @@ interface SpeechToTextProps {
 
 export function SpeechToText({ onTranscript }: SpeechToTextProps) {
   const [isListening, setIsListening] = useState(false);
-  const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(
+    null
+  );
   const { language, t } = useLanguage();
 
   // Map our app languages to SpeechRecognition languages
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const languageMap: Record<string, string> = {
-    en: 'en-US',
-    es: 'es-ES',
-    hi: 'hi-IN',
+    en: "en-US",
+    es: "es-ES",
+    hi: "hi-IN",
   };
 
   useEffect(() => {
     // Initialize speech recognition
-    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
+    const SpeechRecognitionAPI =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
     if (SpeechRecognitionAPI) {
       const recognitionInstance = new SpeechRecognitionAPI();
       recognitionInstance.continuous = false;
       recognitionInstance.interimResults = false;
-      
+
       recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript;
         onTranscript(transcript);
         setIsListening(false);
       };
-      
+
       recognitionInstance.onerror = (event: SpeechRecognitionError) => {
-        console.error('Speech recognition error', event.error);
+        console.error("Speech recognition error", event.error);
         setIsListening(false);
       };
-      
+
       recognitionInstance.onend = () => {
         setIsListening(false);
       };
-      
+
       setRecognition(recognitionInstance);
     }
-    
+
     return () => {
       if (recognition) {
         recognition.stop();
       }
     };
-  }, [onTranscript]);
+  }, [onTranscript, recognition]);
 
   // Update language when app language changes
   useEffect(() => {
     if (recognition) {
-      recognition.lang = languageMap[language] || 'en-US';
+      recognition.lang = languageMap[language] || "en-US";
     }
   }, [language, recognition, languageMap]);
 
   const toggleListening = () => {
     if (!recognition) return;
-    
+
     if (isListening) {
       recognition.stop();
       setIsListening(false);
@@ -125,7 +128,11 @@ export function SpeechToText({ onTranscript }: SpeechToTextProps) {
       className={isListening ? "bg-accent-500 hover:bg-accent-600" : ""}
       title={t("speak")}
     >
-      {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+      {isListening ? (
+        <MicOff className="h-5 w-5" />
+      ) : (
+        <Mic className="h-5 w-5" />
+      )}
     </Button>
   );
 }

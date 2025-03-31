@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useLanguage } from "@/context/LanguageContext";
-import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/useLanguage";
+import { useAuth } from "@/context/useAuth";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,8 +46,8 @@ const SignupPage = () => {
       setSuccess(true); // Set success to true after successful signup
       setReloadPage(true);
       console.log("Reload page");
-      localStorage.removeItem("sb-etpkjcxpqazcvmtrgbgg-auth-token");
-    } catch (err: any) {
+      // localStorage.removeItem("sb-etpkjcxpqazcvmtrgbgg-auth-token");
+    } catch (err) {
       setError(err.message || "Signup failed");
     }
   };
